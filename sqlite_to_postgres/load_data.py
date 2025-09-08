@@ -11,8 +11,14 @@ from psycopg import ClientCursor, connection as pg_connection
 from psycopg.rows import dict_row
 from psycopg import errors as pg_errors
 
+import logging
+
 from dotenv import load_dotenv
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+FORMAT = '%(asctime)s %(levelname)s: %(message)s'
+logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 BATCH_SIZE = 100
 
@@ -33,6 +39,10 @@ class FilmWork:
     def __post_init__(self):
         if isinstance(self.id, str):
             self.id = UUID(self.id)
+        if isinstance(self.created, str):
+            self.created = datetime.fromisoformat(self.created)
+        if isinstance(self.modified, str):
+            self.modified = datetime.fromisoformat(self.modified)
 
 
 @dataclass
@@ -46,6 +56,10 @@ class Person:
     def __post_init__(self):
         if isinstance(self.id, str):
             self.id = UUID(self.id)
+        if isinstance(self.created, str):
+            self.created = datetime.fromisoformat(self.created)
+        if isinstance(self.modified, str):
+            self.modified = datetime.fromisoformat(self.modified)
 
 
 @dataclass
@@ -60,6 +74,10 @@ class Genre:
     def __post_init__(self):
         if isinstance(self.id, str):
             self.id = UUID(self.id)
+        if isinstance(self.created, str):
+            self.created = datetime.fromisoformat(self.created)
+        if isinstance(self.modified, str):
+            self.modified = datetime.fromisoformat(self.modified)
 
 
 @dataclass
@@ -77,6 +95,8 @@ class GenreFilmWork:
             self.genre_id = UUID(self.genre_id)
         if isinstance(self.film_work_id, str):
             self.film_work_id = UUID(self.film_work_id)
+        if isinstance(self.created, str):
+            self.created = datetime.fromisoformat(self.created)
 
 
 @dataclass
@@ -95,6 +115,8 @@ class PersonFilmWork:
             self.person_id = UUID(self.person_id)
         if isinstance(self.film_work_id, str):
             self.film_work_id = UUID(self.film_work_id)
+        if isinstance(self.created, str):
+            self.created = datetime.fromisoformat(self.created)
 
 
 # Словарь, наименование таблицы для переноса данных и датакласс с описанием строки
@@ -124,7 +146,7 @@ class PostgresSaver:
             with closing(self._connection.cursor(row_factory=dict_row)) as _cursor:
                 _cursor.executemany(query, batch_as_tuples)
         except pg_errors.Error as e:
-            print(f'Ошибка записи в Postgres таблицу {table_name}: {e}')
+            logger.error(f'Ошибка записи в Postgres таблицу {table_name}: {e}')
             raise
 
 
@@ -140,7 +162,7 @@ class SQLiteLoader:
             while results := sqlite_cursor.fetchmany(BATCH_SIZE):
                 yield results
         except sqlite3.Error as e:
-            print(f'Ошибка чтения из SQLite таблицы {table_name}: {e}')
+            logger.error(f'Ошибка чтения из SQLite таблицы {table_name}: {e}')
             raise
 
     def transform_data(self, table_name: str, row_class: dataclass) -> Generator[list[Union[FilmWork, Person, Genre, GenreFilmWork, PersonFilmWork]], None, None]:
@@ -149,7 +171,7 @@ class SQLiteLoader:
                 for batch in self.extract_data(_cursor, table_name):
                     yield [row_class(*row_data) for row_data in batch]
         except Exception as e:
-            print(f'Ошибка преобразования данных для таблицы {table_name}: {e}')
+            logger.error(f'Ошибка преобразования данных для таблицы {table_name}: {e}')
             raise
 
 
@@ -160,11 +182,11 @@ def load_from_sqlite(sqlite_conn: sqlite3.Connection, pg_conn: pg_connection, ta
 
     for table_name, table_class in tables_for_load.items():
         try:
-            print(f'Перенос данных таблицы {table_name}')
+            logger.info(f'Перенос данных таблицы {table_name}')
             for batch in sqlite_loader.transform_data(table_name, table_class):
                 postgres_saver.save_data(batch, table_name, table_class)
         except Exception as e:
-            print(f'Ошибка при переносе таблицы {table_name}: {e}')
+            logger.error(f'Ошибка при переносе таблицы {table_name}: {e}')
             raise
 
 
@@ -183,10 +205,10 @@ if __name__ == '__main__':
         )) as pg_conn:
             load_from_sqlite(sqlite_conn, pg_conn, tables_for_load)
             pg_conn.commit()
-            print('🎉 Данные успешно перенесены !!!')
+            logger.info('🎉 Данные успешно перенесены !!!')
     except sqlite3.Error as e:
-        print(f'Ошибка подключения к SQLite: {e}')
+        logger.error(f'Ошибка подключения к SQLite: {e}')
     except pg_errors.Error as e:
-        print(f'Ошибка подключения к Postgres: {e}')
+        logger.error(f'Ошибка подключения к Postgres: {e}')
     except Exception as e:
-        print(f'Неизвестная ошибка: {e}')
+        logger.error(f'Неизвестная ошибка: {e}')

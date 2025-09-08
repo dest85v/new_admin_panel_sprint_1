@@ -6,3 +6,5 @@ flake8
 python-dotenv
 django-split-settings
 django-debug-toolbar
+pytest
+pytest-cov
