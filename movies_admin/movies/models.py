@@ -32,8 +32,8 @@ class Genre(UUIDMixin, TimeStampedMixin):
         # Ваши таблицы находятся в нестандартной схеме. Это нужно указать в классе модели
         db_table = "content\".\"genre"
         # Следующие два поля отвечают за название модели в интерфейсе
-        verbose_name = 'Жанр'
-        verbose_name_plural = 'Жанры'
+        verbose_name = _('Genre')
+        verbose_name_plural = _('Genres')
 
     def __str__(self):
         return self.name
@@ -44,8 +44,8 @@ class Person(UUIDMixin, TimeStampedMixin):
 
     class Meta:
         db_table = "content\".\"person"
-        verbose_name = 'Персона'
-        verbose_name_plural = 'Персоны'
+        verbose_name = _('Persona')
+        verbose_name_plural = _('Personas')
 
     def __str__(self):
         return self.full_name
@@ -74,16 +74,16 @@ class FilmWork(UUIDMixin, TimeStampedMixin):
 
     class Meta:
         db_table = "content\".\"film_work"
-        verbose_name = 'Кинопроизведение'
-        verbose_name_plural = 'Кинопроизведения'
+        verbose_name = _('Filmwork')
+        verbose_name_plural = _('Filmworks')
 
     def __str__(self):
         return self.title
 
 
 class GenreFilmWork(UUIDMixin):
-    film_work = models.ForeignKey('FilmWork', on_delete=models.CASCADE)
-    genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
+    film_work = models.ForeignKey(FilmWork, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -91,9 +91,21 @@ class GenreFilmWork(UUIDMixin):
 
 
 class PersonFilmWork(UUIDMixin):
-    film_work = models.ForeignKey('FilmWork', on_delete=models.CASCADE)
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
-    role = models.TextField(_('role'), max_length=255)
+    class Roles(models.TextChoices):
+        PRODUCER = "producer", _("producer")
+        DIRECTOR = "director", _("director")
+        # SCREENWRITER = "screenwriter", _("screenwriter")
+        CASTING_DIRECTOR = "casting director", _("casting director")
+        PRODUCTION_DESIGNER = "production designer", _("production designer")
+        COSTUME_DESIGNER = "costume designer", _("costume designer")
+        MAKEUP_ARTIST = "makeup artist", _("makeup artist")
+        COMPOSER = "composer", _("composer")
+        ACTOR = "actor", _("actor")
+        WRITER = "writer", _("writer")
+
+    film_work = models.ForeignKey(FilmWork, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    role = models.TextField(_('role'), max_length=255, choices=Roles.choices, default=Roles.PRODUCER)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

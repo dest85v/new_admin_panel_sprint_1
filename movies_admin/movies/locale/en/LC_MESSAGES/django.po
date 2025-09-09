@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-03 20:19+0000\n"
+"POT-Creation-Date: 2025-09-09 10:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: movies/admin.py:57
+msgid "undefined"
+msgstr ""
+
+#: movies/admin.py:62
+msgid "Film genres"
+msgstr ""
+
+#: movies/admin.py:63
+msgid "Persons with roles"
+msgstr ""
 
 #: movies/apps.py:8
 msgid "movies"
@@ -28,6 +40,22 @@ msgstr ""
 
 #: movies/models.py:29 movies/models.py:60
 msgid "description"
+msgstr ""
+
+#: movies/models.py:35
+msgid "Genre"
+msgstr ""
+
+#: movies/models.py:36
+msgid "Genres"
+msgstr ""
+
+#: movies/models.py:47
+msgid "Persona"
+msgstr ""
+
+#: movies/models.py:48
+msgid "Personas"
 msgstr ""
 
 #: movies/models.py:56
@@ -50,10 +78,54 @@ msgstr ""
 msgid "rating"
 msgstr ""
 
-#: movies/models.py:64
+#: movies/models.py:67
 msgid "type"
 msgstr ""
 
-#: movies/models.py:93
+#: movies/models.py:77
+msgid "Filmwork"
+msgstr ""
+
+#: movies/models.py:78
+msgid "Filmworks"
+msgstr ""
+
+#: movies/models.py:95
+msgid "producer"
+msgstr ""
+
+#: movies/models.py:96
+msgid "director"
+msgstr ""
+
+#: movies/models.py:98
+msgid "casting director"
+msgstr ""
+
+#: movies/models.py:99
+msgid "production designer"
+msgstr ""
+
+#: movies/models.py:100
+msgid "costume designer"
+msgstr ""
+
+#: movies/models.py:101
+msgid "makeup artist"
+msgstr ""
+
+#: movies/models.py:102
+msgid "composer"
+msgstr ""
+
+#: movies/models.py:103
+msgid "actor"
+msgstr ""
+
+#: movies/models.py:104
+msgid "writer"
+msgstr ""
+
+#: movies/models.py:108
 msgid "role"
 msgstr ""
